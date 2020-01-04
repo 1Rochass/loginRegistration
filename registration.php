@@ -1,3 +1,7 @@
+<?php 
+// Session start
+session_start();
+?>
 <a href="index.php">Home</a>
 <br>
 <?php 
@@ -36,39 +40,93 @@ if (isset($_POST['registration'])) {
 	else {
 		$user_email = trim($_POST['user_email']);
 	}
+	// date_registration
+	$date_registration = date('Y-m-d H:i:s', time());
 
 	// ERROR
-	if ($error !== NULL) {
+	if (!empty($error) ) {
 		$errorMessage = array_shift($error);
 		echo "<p style='color:red'>{$errorMessage}</p>";
 	}
 	else {
 
+		// DB PDO
+		$user = "root";
+		$password = "";
+
+		$host = "localhost";
+		$db = "loginregistration";
+		$charset = "utf8";
+
+		$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+		$opt = [
+			'PDO::ATTR_ERRMODE'            => 'PDO::ERRMODE_EXCEPTION',
+        	'PDO::ATTR_DEFAULT_FETCH_MODE' => 'PDO::FETCH_ASSOC',
+        	'PDO::ATTR_EMULATE_PREPARES'   => 'false',
+		];
+
+		$pdo = new PDO($dsn, $user, $password, $opt);
 
 
-		// DB
-		$connect = new mysqli("localhost", "root", "toor", "loginregistration"); 
-		
-		$select = "SELECT * FROM users where user_login = '$user_login'";
-		$result = $connect->query($select);
+		// Check user existing
+		$query = "SELECT * FROM `users` WHERE user_login = '$user_login'";
 
-		if ($result->fetch_assoc() == NULL) {
+		$stmt = $pdo->query($query);
 
-			$insert = "INSERT INTO `users` 
-				  (user_login, user_password, user_email)
-				  VALUES
-				  ('$user_login', '$user_password', '$user_email')";
-
-			if ($connect->query($insert) === TRUE) {
-				echo "<p style='color:green'>You have successfully registered.</p>";
-			}
-			else {
-				echo "Error:" . $connect->error;
-			}
+		// check response 
+		if ($stmt->rowCount() > 0) {
+			echo "<p style='color: red'>Sorry, but this login: '{$user_login}' is busy. Try another.</p>";
 		}
 		else {
-			echo "You must change your login";
+			// Make registration
+			$query = "INSERT INTO `users` 
+				(user_login, user_password, user_email, date_registration) 
+				VALUES 
+				(:user_login, :user_password, :user_email, :date_registration)";
+
+			$params = [
+				':user_login' => $user_login,
+				':user_password' => $user_password,
+				':user_email' => $user_email,
+				':date_registration' => $date_registration
+			];
+
+			$stmt = $pdo->prepare($query);
+			$stmt = $stmt->execute($params);
+
+			if ($stmt === TRUE) {
+
+				// Session
+				$_SESSION['user_login'] = $user_login;
+
+		 		echo "<p style='color:green'>{$_SESSION['user_login']} You have successfully registered.</p>";
+		 	}
 		}
+
+
+		// mysqli
+		// $connect = new mysqli("localhost", "root", "toor", "loginregistration"); 
+		
+		// $select = "SELECT * FROM users where user_login = '$user_login'";
+		// $result = $connect->query($select);
+
+		// if ($result->fetch_assoc() == NULL) {
+
+		// 	$insert = "INSERT INTO `users` 
+		// 		  (user_login, user_password, user_email)
+		// 		  VALUES
+		// 		  ('$user_login', '$user_password', '$user_email')";
+
+		// 	if ($connect->query($insert) === TRUE) {
+		// 		echo "<p style='color:green'>You have successfully registered.</p>";
+		// 	}
+		// 	else {
+		// 		echo "Error:" . $connect->error;
+		// 	}
+		// }
+		// else {
+		// 	echo "You must change your login";
+		// }
 
 		
 	}
