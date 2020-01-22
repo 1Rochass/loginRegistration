@@ -1,5 +1,6 @@
 <?php 
-session_start();
+// BOOTSTRAP
+require_once "bootstrap.php";
 ?>
 <!DOCTYPE html>
 <html>
@@ -11,6 +12,7 @@ session_start();
 <?php if (isset($_GET['error'])) {
 	echo "<div style='color:red'>" . $_GET['error'] ."</div><br>"; }
 ?>	
+<!-- MENU -->
 <a href="login.php">Login</a>
 <br>
 <a href="registration.php">Registration</a>

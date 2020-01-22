@@ -1,7 +1,8 @@
 <?php 
-// Session start
-session_start();
+// BOOTSTRAP
+require_once "bootstrap.php";
 ?>
+<!-- MENU -->
 <a href="index.php">Home</a>
 <br>
 <?php 
@@ -50,28 +51,11 @@ if (isset($_POST['registration'])) {
 	}
 	else {
 
-		// DB PDO
-		$user = "root";
-		$password = "";
-
-		$host = "localhost";
-		$db = "loginregistration";
-		$charset = "utf8";
-
-		$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-		$opt = [
-			'PDO::ATTR_ERRMODE'            => 'PDO::ERRMODE_EXCEPTION',
-        	'PDO::ATTR_DEFAULT_FETCH_MODE' => 'PDO::FETCH_ASSOC',
-        	'PDO::ATTR_EMULATE_PREPARES'   => 'false',
-		];
-
-		$pdo = new PDO($dsn, $user, $password, $opt);
-
-
 		// Check user existing
 		$query = "SELECT * FROM `users` WHERE user_login = '$user_login'";
 
 		$stmt = $pdo->query($query);
+
 
 		// check response 
 		if ($stmt->rowCount() > 0) {
@@ -93,13 +77,17 @@ if (isset($_POST['registration'])) {
 
 			$stmt = $pdo->prepare($query);
 			$stmt = $stmt->execute($params);
-
+			 
 			if ($stmt === TRUE) {
 
 				// Session
 				$_SESSION['user_login'] = $user_login;
 
 		 		echo "<p style='color:green'>{$_SESSION['user_login']} You have successfully registered.</p>";
+		 	}
+		 	else {
+		 		echo "<p style='color:red'>Something wrong with stmt</p>";
+		 		var_dump($stmt);
 		 	}
 		}
 
