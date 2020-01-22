@@ -2,23 +2,41 @@
 // BOOTSTRAP
 require_once "bootstrap.php";
 ?>
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+<?php 
+// Session
+if (isset($_SESSION['user_login'])) {
+	echo "<p style='color:green'>Your login: {$_SESSION['user_login']}</p>";
+	echo "
+	<form  action='' method='POST'>
+	<input type='submit' name='session_unset' value='Выйти'>
+	</form>";
+}
+?>
 <!-- MENU -->
+<h3>Registration</h3>
 <a href="index.php">Home</a>
+<br>
 <br>
 <?php 
 // VALIDATION
-$error = array();
+$errors = array();
 if (isset($_POST['registration'])) {
 	// user_login
 	if (empty($_POST['user_login'])) {
-		$error[] = "Please write your login.";
+		$errors[] = "Please write your login.";
 	}
 	else {
 		$user_login = trim($_POST['user_login']);
 	}
 	// user_password
 	if (empty($_POST['user_password'])) {
-		$error[] = "Please write your password.";
+		$errors[] = "Please write your password.";
 	}
 	else {
 		// HASH
@@ -26,17 +44,17 @@ if (isset($_POST['registration'])) {
 	}
 	// user_repeat_password
 	if (empty($_POST['user_repeat_password'])) {
-		$error[] = "Please repeat your password.";
+		$errors[] = "Please repeat your password.";
 	}
 	else if ($_POST['user_password'] !== $_POST['user_repeat_password']) {
-		$error[] = "Your passwords is not similar."; 
+		$errors[] = "Your passwords is not similar."; 
 	}
 	else {
 		$user_repeat_password = trim($_POST['user_repeat_password']);
 	}
 	// user_email
 	if (empty($_POST['user_email'])) {
-		$error[] = "Please write your email.";
+		$errors[] = "Please write your email.";
 	}
 	else {
 		$user_email = trim($_POST['user_email']);
@@ -45,12 +63,12 @@ if (isset($_POST['registration'])) {
 	$date_registration = date('Y-m-d H:i:s', time());
 
 	// ERROR
-	if (!empty($error) ) {
-		$errorMessage = array_shift($error);
-		echo "<p style='color:red'>{$errorMessage}</p>";
+	if (!empty($errors) ) {
+		$error = array_shift($errors);
+		echo "<p style='color:red'>{$error}</p>";
 	}
 	else {
-
+		// DB
 		// Check user existing
 		$query = "SELECT * FROM `users` WHERE user_login = '$user_login'";
 
@@ -83,9 +101,13 @@ if (isset($_POST['registration'])) {
 				// Session
 				$_SESSION['user_login'] = $user_login;
 
-		 		echo "<p style='color:green'>{$_SESSION['user_login']} You have successfully registered.</p>";
+		 		echo "<p style='color:green'><span style='color:red'>{$_SESSION['user_login']}</span> You have successfully registered.</p>";
 		 	}
 		 	else {
+
+		    echo "PDO::errorInfo():";
+		    print_r($pdo->errorInfo());
+
 		 		echo "<p style='color:red'>Something wrong with stmt</p>";
 		 		var_dump($stmt);
 		 	}
@@ -151,4 +173,5 @@ user_email
 	<br>
 	<input type="submit" name="registration" value="Registration">
 </form>
-
+</body>
+</html>
