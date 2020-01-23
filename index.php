@@ -11,7 +11,7 @@ require_once "bootstrap.php";
 <?php
 // Errors
 if (isset($_GET['error'])) {
-	echo "<div style='color:red'>" . $_GET['error'] ."</div><br>"; }
+	echo "<br><div style='color:red'>" . $_GET['error'] ."</div>"; }
 // Session
 if (isset($_SESSION['user_login'])) {
 	echo "<p style='color:green'>Your login: {$_SESSION['user_login']}</p>";
@@ -27,12 +27,17 @@ if (isset($_SESSION['user_login'])) {
 <br>
 <a href="registration.php">Registration</a>
 
-<?php
-// User profile
-if (isset($_SESSION['user_login'])) {
-	echo "<br>";
-	echo "<a href='userProfile.php'>Profie</a>";	
-}
-?>
+	<?php
+	// User profile
+	if (isset($_SESSION['user_login'])) {
+		echo "<br>";
+		echo "<a href='userProfile.php'>Profie</a>";	
+	}
+	// Admin
+		if (isset($_SESSION['admin'])) {
+			echo "<br>";
+			echo "<a href='admin.php'>Admin</a>";	
+		}
+	?>
 </body>
 </html>

@@ -22,15 +22,16 @@ if (isset($_SESSION['user_login'])) {
 <h3>Login</h3>
 <a href="index.php">Home</a>
 
-<?php
-// User profile
-if (isset($_SESSION['user_login'])) {
-	echo "<br>";
-	echo "<a href='userProfile.php'>Profie</a>";	
-}
-?>
-<br>
-<br>
+	<?php
+	// User profile
+	if (isset($_SESSION['user_login'])) {
+		echo "<br>";
+		echo "<a href='userProfile.php'>Profie</a>";	
+	}
+	?>
+	<br>
+	<br>
+
 <?php
 // Login
 // Validation
@@ -80,16 +81,12 @@ if (isset($_POST['login'])) {
 			
 			// Session
 			$_SESSION['user_login'] = $row['user_login'];
+			
+			if (isset($row['admin'])) {
+				$_SESSION['admin'] = $row['admin'];
+			}
 
 	 		echo "<p style='color:green'><span style='color:red'>{$_SESSION['user_login']}</span> You have successfully logged.</p>";
-
-	 		// Session unset
-			if (isset($_SESSION['user_login'])) {
-				echo "
-				<form  action='' method='POST'>
-				<input type='submit' name='session_unset' value='Выйти'>
-				</form><br>";
-			}
 		}
 	}
 }
